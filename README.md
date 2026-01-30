@@ -59,6 +59,39 @@ When `ENABLE_DEVELOPMENT_MODE=false` (default):
 > [!NOTE]
 > The `.devcontainer/.env` file is gitignored to prevent accidentally committing local configuration.
 
+## Headless Mode (Server/CLI)
+
+Run the devcontainer on a server without VS Code using the `devcontainer` CLI.
+
+### Prerequisites
+
+```bash
+# Install Node.js (if not present)
+curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Install devcontainer CLI
+npm install -g @devcontainers/cli
+
+# Ensure Docker is installed and running
+```
+
+### Running Headless
+
+```bash
+# Deploy the container
+.devcontainer/deploy-headless.sh
+
+# Attach to the container
+devcontainer exec --workspace-folder . bash
+
+# Stop the container
+docker compose -f .devcontainer/docker-compose.yml down
+```
+
+> [!TIP]
+> Headless mode automatically enables development mode and uses bash instead of zsh.
+
 # Setup the developer environment
 
 All the repositories you will need to work with are indexed inside a repository called `dt-env-developer`.
