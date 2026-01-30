@@ -34,11 +34,29 @@ fi
 # Set headless mode environment
 export HEADLESS_MODE=true
 
+# Detect architecture
+ARCH=$(uname -m)
+case "$ARCH" in
+    aarch64|arm64)
+        PLATFORM="linux/arm64"
+        ;;
+    x86_64|amd64)
+        PLATFORM="linux/amd64"
+        ;;
+    *)
+        PLATFORM=""
+        echo "Warning: Unknown architecture '$ARCH'. Proceeding without platform specification."
+        ;;
+esac
+
 echo ""
+echo "Architecture: $ARCH"
+[ -n "$PLATFORM" ] && echo "Platform: $PLATFORM"
 echo "Starting devcontainer in headless mode..."
 echo ""
 
 # Build and start the container
+# Note: devcontainer CLI auto-detects platform, but we log it for debugging
 devcontainer up --workspace-folder "$WORKSPACE_DIR"
 
 echo ""
