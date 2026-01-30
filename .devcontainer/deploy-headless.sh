@@ -56,15 +56,32 @@ echo "Starting devcontainer in headless mode..."
 echo ""
 
 # Build and start the container
-# Note: devcontainer CLI auto-detects platform, but we log it for debugging
 devcontainer up --workspace-folder "$WORKSPACE_DIR"
 
 echo ""
 echo "=== Container is running! ==="
 echo ""
-echo "To attach to the container:"
-echo "  devcontainer exec --workspace-folder \"$WORKSPACE_DIR\" bash"
+
+# Get container name for direct docker access
+CONTAINER_NAME="dt-env-developer_devcontainer-devcontainer-1"
+
+echo "=== Verification ==="
+echo "Checking container status..."
+docker ps --filter "name=$CONTAINER_NAME" --format "table {{.Names}}\t{{.Status}}\t{{.Image}}"
 echo ""
-echo "To stop the container:"
+
+echo "=== Usage ==="
+echo ""
+echo "Attach to container (interactive shell):"
+echo "  docker exec -it $CONTAINER_NAME bash"
+echo ""
+echo "Run a command in container:"
+echo "  docker exec $CONTAINER_NAME <command>"
+echo ""
+echo "Stop the container:"
 echo "  docker compose -f \"$SCRIPT_DIR/docker-compose.yml\" down"
 echo ""
+echo "=== Quick Test ==="
+echo "  docker exec $CONTAINER_NAME dts version"
+echo ""
+
