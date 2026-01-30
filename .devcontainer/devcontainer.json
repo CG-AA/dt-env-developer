@@ -14,8 +14,10 @@
 			"webPort": 6080
 		}
 	},
-	"forwardPorts": [6080],
-	"postStartCommand": "/workspaces/dt-env-developer/.devcontainer/postStartCommand.sh",
+	"forwardPorts": [
+		6080
+	],
+	"postStartCommand": "bash /workspaces/dt-env-developer/.devcontainer/postStartCommand.sh",
 	"customizations": {
 		"vscode": {
 			"extensions": [
