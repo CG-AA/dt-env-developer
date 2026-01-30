@@ -1,5 +1,18 @@
 #!/bin/bash
 
+# ----- Headless Mode Detection -----
+# When running headless (without VS Code), auto-enable development mode
+if [ "${HEADLESS_MODE}" = "true" ]; then
+    echo "Headless mode detected. Auto-enabling development mode..."
+    export ENABLE_DEVELOPMENT_MODE=true
+    # Use bash instead of zsh for headless (zsh may not be default shell)
+    SHELL_RC="$HOME/.bashrc"
+    SHELL_HOOK='eval "$(direnv hook bash)"'
+else
+    SHELL_RC="$HOME/.zshrc"
+    SHELL_HOOK='eval "$(direnv hook zsh)"'
+fi
+
 # Clear up /tmp directory
 sudo rm -rf /tmp/duckietown/*
 
@@ -19,19 +32,19 @@ sudo avahi-daemon -D
 export DOCKER_CONFIG="$(mktemp -d)"
 printf '{}' > "$DOCKER_CONFIG/config.json"
 
-# Add DOCKER_CONFIG to ~/.zshrc for persistent access
-if ! grep -q "export DOCKER_CONFIG=" ~/.zshrc; then
-	echo "export DOCKER_CONFIG=\"$DOCKER_CONFIG\"" >> ~/.zshrc
+# Add DOCKER_CONFIG to shell rc for persistent access
+if ! grep -q "export DOCKER_CONFIG=" "$SHELL_RC"; then
+	echo "export DOCKER_CONFIG=\"$DOCKER_CONFIG\"" >> "$SHELL_RC"
 fi
 
 # Check if development mode is enabled and run direnv allow
 if [ "${ENABLE_DEVELOPMENT_MODE}" = "true" ]; then
 	echo "Development mode enabled. Setting up direnv..."
 	
-	# Add direnv hook to bashrc if not already present
-	if ! grep -q 'eval "$(direnv hook zsh)"' ~/.zshrc; then
-		echo 'eval "$(direnv hook zsh)"' >> ~/.zshrc
-		echo "Direnv hook added to ~/.zshrc"
+	# Add direnv hook to shell rc if not already present
+	if ! grep -q "$SHELL_HOOK" "$SHELL_RC"; then
+		echo "$SHELL_HOOK" >> "$SHELL_RC"
+		echo "Direnv hook added to $SHELL_RC"
 	fi
 	
 	# Run direnv allow
@@ -41,10 +54,10 @@ if [ "${ENABLE_DEVELOPMENT_MODE}" = "true" ]; then
 else
 	echo "Development mode not enabled (set ENABLE_DEVELOPMENT_MODE=true in .devcontainer/.env to enable)."
 	
-	# Remove direnv hook from ~/.zshrc if present
-	if grep -q 'eval "$(direnv hook zsh)"' ~/.zshrc; then
-		sed -i '/eval "$(direnv hook zsh)"/d' ~/.zshrc
-		echo "Direnv hook removed from ~/.zshrc"
+	# Remove direnv hook from shell rc if present
+	if grep -q "$SHELL_HOOK" "$SHELL_RC"; then
+		sed -i "\|$SHELL_HOOK|d" "$SHELL_RC"
+		echo "Direnv hook removed from $SHELL_RC"
 	fi
 
 	sudo rm -rf /tmp/vscode-ssh-auth-* # This is a workaround to disable SSH agent forwarding in devcontainers
