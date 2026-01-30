@@ -34,6 +34,10 @@ fi
 # Set headless mode environment
 export HEADLESS_MODE=true
 
+# Export host UID/GID for container user matching
+export HOST_UID=$(id -u)
+export HOST_GID=$(id -g)
+
 # Detect architecture
 ARCH=$(uname -m)
 case "$ARCH" in
@@ -51,6 +55,7 @@ esac
 
 echo ""
 echo "Architecture: $ARCH"
+echo "Host UID/GID: $HOST_UID:$HOST_GID"
 [ -n "$PLATFORM" ] && echo "Platform: $PLATFORM"
 echo "Starting devcontainer in headless mode..."
 echo ""
