@@ -17,6 +17,7 @@
 	"forwardPorts": [
 		6080
 	],
+	"onCreateCommand": "sudo chown -R vscode:vscode /workspaces || true",
 	"postStartCommand": "bash /workspaces/dt-env-developer/.devcontainer/postStartCommand.sh",
 	"customizations": {
 		"vscode": {
